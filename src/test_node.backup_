@@ -1,0 +1,86 @@
+#include <stdio.h>
+#include <ros/ros.h>
+#include "bayes_filter/Particle.h"
+#include "bayes_filter/ParticleFilter.h"
+#include <geometry_msgs/PoseArray.h>
+#include <geometry_msgs/Pose2D.h>
+#include <tf/transform_datatypes.h>
+#include "nav_msgs/Odometry.h"
+#include <nav_msgs/OccupancyGrid.h>
+#include <visualization_msgs/Marker.h>
+
+ros::Publisher vis_pub;
+
+nav_msgs::OccupancyGrid map_;
+
+geometry_msgs::Pose2D loc;
+// geometry_msgs::Pose2D current;
+void odomCallBack(const nav_msgs::Odometry& msg){
+	loc.x = msg.pose.pose.position.x;
+	loc.y = msg.pose.pose.position.y;
+	loc.theta = tf::getYaw(msg.pose.pose.orientation);
+}
+
+void mapCallBack(const nav_msgs::OccupancyGrid msg){
+	map_ = msg;
+}
+
+
+void point_marker(double x, double y)
+{
+
+	visualization_msgs::Marker marker;
+	marker.header.frame_id = "odom";
+	marker.header.stamp = ros::Time();
+	marker.ns = "my_namespace";
+	marker.type = visualization_msgs::Marker::SPHERE;
+	marker.action = visualization_msgs::Marker::ADD;
+	marker.pose.position.x = x;
+	marker.pose.position.y = y;
+	marker.pose.position.z = 0;
+	marker.pose.orientation.x = 0.0;
+	marker.pose.orientation.y = 0.0;
+	marker.pose.orientation.z = 0.0;
+	marker.pose.orientation.w = 1.0;
+	marker.scale.x = 0.1;
+	marker.scale.y = 0.1;
+	marker.scale.z = 0.1;
+	marker.color.a = 1.0; // Don't forget to set the alpha!
+	marker.color.r = 0.0;
+	marker.color.g = 1.0;
+	marker.color.b = 0.0;
+	//only if using a MESH_RESOURCE marker type:
+	// marker.mesh_resource = "package://pr2_description/meshes/base_v0/base.dae";
+	vis_pub.publish( marker );
+
+}
+
+int main(int argc, char** argv)
+{
+	ros::init(argc, argv, "filter");
+	ros::NodeHandle nh;
+	ros::Publisher particle_pub;
+
+	particle_pub = nh.advertise<geometry_msgs::PoseArray>("/particle_cloud",1);
+
+	ros::Subscriber map_sub = nh.subscribe("/map2d", 1, mapCallBack);
+
+	ros::Subscriber odom_sub = nh.subscribe("/odom", 1, odomCallBack);
+
+	vis_pub = nh.advertise<visualization_msgs::Marker>( "visualization_marker", 0 );
+
+	ParticleFilter *pf = new ParticleFilter(map_);
+	while(ros::ok())
+	{
+		geometry_msgs::PoseArray particle_msgs = pf->bayesian(loc);
+		// point_marker(3 , -2);
+		// current = loc;
+		particle_pub.publish(particle_msgs);
+	// 	// std::cout << " x : " << loc.x << "  , y : " << loc.y << "  , yaw : " << loc.theta << std::endl; 
+		ros::spinOnce();
+		
+	}
+
+	return 0;
+
+}
