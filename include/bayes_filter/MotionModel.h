@@ -7,7 +7,7 @@
 #include <random>
 #include "bayes_filter/ParticleType.h"
 
-class Models{
+class MotionModel{
 	public:
 		// Xt pose
 		geometry_msgs::Pose2D latest_pose;
@@ -16,8 +16,8 @@ class Models{
 		// Xt - Xt-1
 		geometry_msgs::Pose2D delta_pose;
 
-		Models();
-		void motion(geometry_msgs::Pose2D latest_pose, geometry_msgs::Pose2D prev_pose, std::vector<Particles> &samples);
+		MotionModel();
+		void odom(geometry_msgs::Pose2D latest_pose, geometry_msgs::Pose2D prev_pose, std::vector<Particles> &samples);
 		void gaussNoise();
 		float SampleStandardNormalDistribution(float var);
 

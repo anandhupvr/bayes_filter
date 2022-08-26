@@ -1,14 +1,14 @@
-#include "bayes_filter/Models.h"
+#include "bayes_filter/MotionModel.h"
 
-Models::Models()
+MotionModel::MotionModel()
 {}
 
-// void Models::getDistance()
+// void MotionModel::getDistance()
 // {
 
 // }
 
-float Models::SampleStandardNormalDistribution(float var)
+float MotionModel::SampleStandardNormalDistribution(float var)
 {
 	float sum = 0;
 	for (int i = 0;i < 12; i++)
@@ -18,7 +18,7 @@ float Models::SampleStandardNormalDistribution(float var)
 }
 
 
-void Models::motion(geometry_msgs::Pose2D latest_pose, geometry_msgs::Pose2D prev_pose, std::vector<Particles> &samples){
+void MotionModel::odom(geometry_msgs::Pose2D latest_pose, geometry_msgs::Pose2D prev_pose, std::vector<Particles> &samples){
 
 	double delta_trans = sqrt(pow((latest_pose.x - prev_pose.x), 2) + pow((latest_pose.y - prev_pose.y), 2));
 	double deltarot1 = atan2(latest_pose.y - prev_pose.y, latest_pose.x - prev_pose.x) - prev_pose.theta;
@@ -37,7 +37,7 @@ void Models::motion(geometry_msgs::Pose2D latest_pose, geometry_msgs::Pose2D pre
 	}
 
 }
-void Models::gaussNoise()
+void MotionModel::gaussNoise()
 {
 
 }

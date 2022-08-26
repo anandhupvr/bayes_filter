@@ -47,7 +47,8 @@ add_executable(pf_test
               src/Particle.cpp
               src/Map.cpp
               src/ParticleFilter.cpp
-              src/Models.cpp
+              src/MotionModel.cpp
+              src/SensorModel.cpp
                 )
 # target_link_libraries(main ${roscpp_LIBRARIES} ${std_msgs_LIBRARIES} ${catkin_LIBRARIES}  ${PCL_LIBRARIES} ${LIBRARIES})
 target_link_libraries(pf_test
