@@ -18,7 +18,6 @@ class MotionModel{
 
 		MotionModel();
 		void odom(geometry_msgs::Pose2D latest_pose, geometry_msgs::Pose2D prev_pose, std::vector<Particles> &samples);
-		void gaussNoise();
 		float SampleStandardNormalDistribution(float var);
 
 };
